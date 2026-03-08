@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Построение прямоугольного треугольника</title>
+
+    <script src="https://www.geogebra.org/apps/deployggb.js"></script>
+
+    <style>
+      body {
+        font-family: Arial;
+        text-align: center;
+      }
+
+      #ggb {
+        width: 900px;
+        height: 600px;
+        margin: auto;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 18px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>
+      Построение прямоугольного треугольника по гипотенузе и сумме катетов
+    </h2>
+
+    <div id="ggb"></div>
+
+    <button onclick="nextStep()">Следующий шаг</button>
+
+    <script>
+      let step = 0;
+      let ggb;
+
+      let params = {
+        appName: "geometry",
+        width: 900,
+        height: 600,
+        showToolBar: false,
+        showMenuBar: false,
+        showAlgebraInput: false,
+      };
+
+      let app = new GGBApplet(params, true);
+
+      window.onload = function () {
+        app.inject("ggb");
+      };
+
+      function nextStep() {
+        ggb = document.ggbApplet;
+        step++;
+
+        if (step === 1) {
+          ggb.evalCommand("K=(0,0)");
+          ggb.evalCommand("dop1 = (1,0)");
+          ggb.setVisible("dop1", false);
+          ggb.evalCommand("l=Line(K, dop1)");
+          ggb.evalCommand("M=(0,2)");
+          ggb.evalCommand("mk=Segment(K,M)");
+        }
+
+        if (step === 2) {
+          ggb.evalCommand("KE = AngularBisector(M,K,(4,0))");
+          ggb.evalCommand("E = Point(KE)");
+          ggb.setCoords("E", 4.5, 3);
+        }
+
+        if (step === 3) {
+          ggb.evalCommand("d = 4.3");
+          ggb.evalCommand("B = (d,0)");
+          ggb.evalCommand("Segment(K,B)");
+        }
+
+        if (step === 4) {
+          ggb.evalCommand("c = 3.3");
+          ggb.evalCommand("circle = Circle(B,c)");
+          ggb.evalCommand("A = Intersect(circle,KE,1)");
+          ggb.evalCommand("A1 = Intersect(circle,KE,2)");
+        }
+
+        if (step === 5) {
+          ggb.evalCommand("AC = PerpendicularLine(A,l)");
+          ggb.evalCommand("C = Intersect(AC,l)");
+          ggb.evalCommand("Polygon(A,B,C)");
+        }
+
+        if (step === 6) {
+          ggb.evalCommand("A1C1 = PerpendicularLine(A1,l)");
+          ggb.evalCommand("C1 = Intersect(A1C1,l)");
+          ggb.evalCommand("Polygon(A1,B,C1)");
+        }
+      }
+    </script>
+  </body>
+</html>
