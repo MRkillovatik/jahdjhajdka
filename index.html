@@ -2,38 +2,142 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Построение прямоугольного треугольника</title>
+    <title>Построение треугольника</title>
 
     <script src="https://www.geogebra.org/apps/deployggb.js"></script>
 
     <style>
       body {
-        font-family: Arial;
+        font-family:
+          Segoe UI,
+          Arial;
+        background: #f5f7fb;
+        margin: 0;
+      }
+
+      h1 {
         text-align: center;
+        margin: 25px;
+        color: #2c3e50;
+      }
+
+      .layout {
+        display: flex;
+        width: 1200px;
+        margin: auto;
+        gap: 30px;
       }
 
       #ggb {
-        width: 900px;
+        width: 850px;
         height: 600px;
-        margin: auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .panel {
+        text-align: center;
+        margin-top: 15px;
       }
 
       button {
-        padding: 10px 20px;
-        font-size: 18px;
-        margin-top: 10px;
+        background: #4a6cff;
+        border: none;
+        color: white;
+        padding: 12px 25px;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin: 5px;
+      }
+
+      button:hover {
+        background: #324ee0;
+      }
+
+      .sidebar {
+        width: 320px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      }
+
+      .title {
+        color: #2a9d8f;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .step {
+        padding: 6px 8px;
+        border-radius: 6px;
+        margin-bottom: 6px;
+      }
+
+      .active {
+        background: #e8f0ff;
+        border-left: 4px solid #4a6cff;
+        font-weight: bold;
       }
     </style>
   </head>
 
   <body>
-    <h2>
-      Построение прямоугольного треугольника по гипотенузе и сумме катетов
-    </h2>
+    <h1>Построение прямоугольного треугольника</h1>
 
-    <div id="ggb"></div>
+    <div class="layout">
+      <div>
+        <div id="ggb"></div>
 
-    <button onclick="nextStep()">Следующий шаг</button>
+        <div class="panel">
+          <button onclick="prevStep()">⬅ Назад</button>
+          <button onclick="nextStep()">Следующий шаг ➜</button>
+          <button onclick="resetAll()">Сбросить</button>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <div class="card">
+          <div class="title">Дано</div>
+
+          ΔABC ∠ACB = 90° AB = c AC + BC = d
+        </div>
+
+        <div class="card">
+          <div class="title">Анализ</div>
+
+          Предположим, что искомый прямоугольный треугольник ABC построен. Его
+          гипотенуза AB имеет длину c, а сумма катетов равна d. Обозначим
+          катеты: AC = a BC = b Тогда по условию: a + b = d Продолжим катет BC
+          за точку C и отложим CK = AC. Тогда: BK = a + b = d Кроме того,
+          треугольник ACK будет прямоугольным и равнобедренным. Следовательно:
+          ∠AKC = 45° Это позволяет построить треугольник AKB.
+        </div>
+
+        <div class="card">
+          <div class="title">Построение</div>
+
+          <div id="s1" class="step">
+            1. Опускаем из точки M перпендикуляр MK.
+          </div>
+          <div id="s2" class="step">2. Строим биссектрису KE прямого угла.</div>
+          <div id="s3" class="step">3. Откладываем отрезок KB = d.</div>
+          <div id="s4" class="step">
+            4. Строим окружность с центром B радиуса c.
+          </div>
+          <div id="s5" class="step">5. Получаем точки пересечения A и A₁.</div>
+          <div id="s6" class="step">6. Опускаем перпендикуляры AC и A₁C₁.</div>
+        </div>
+      </div>
+    </div>
 
     <script>
       let step = 0;
@@ -41,7 +145,7 @@
 
       let params = {
         appName: "geometry",
-        width: 900,
+        width: 850,
         height: 600,
         showToolBar: false,
         showMenuBar: false,
@@ -54,49 +158,86 @@
         app.inject("ggb");
       };
 
-      function nextStep() {
-        ggb = document.ggbApplet;
-        step++;
+      function highlightStep() {
+        for (let i = 1; i <= 6; i++) {
+          document.getElementById("s" + i).classList.remove("active");
+        }
 
-        if (step === 1) {
+        if (step > 0) {
+          document.getElementById("s" + step).classList.add("active");
+        }
+      }
+
+      function buildStep(s) {
+        if (s >= 1) {
           ggb.evalCommand("K=(0,0)");
-          ggb.evalCommand("dop1 = (1,0)");
+          ggb.evalCommand("dop1=(1,0)");
           ggb.setVisible("dop1", false);
-          ggb.evalCommand("l=Line(K, dop1)");
+
+          ggb.evalCommand("l=Line(K,dop1)");
           ggb.evalCommand("M=(0,2)");
-          ggb.evalCommand("mk=Segment(K,M)");
+          ggb.evalCommand("Segment(K,M)");
         }
 
-        if (step === 2) {
-          ggb.evalCommand("KE = AngularBisector(M,K,(4,0))");
-          ggb.evalCommand("E = Point(KE)");
-          ggb.setCoords("E", 4.5, 3);
+        if (s >= 2) {
+          ggb.evalCommand("KE=AngularBisector(M,K,(4,0))");
         }
 
-        if (step === 3) {
-          ggb.evalCommand("d = 4.3");
-          ggb.evalCommand("B = (d,0)");
+        if (s >= 3) {
+          ggb.evalCommand("d=4.3");
+          ggb.evalCommand("B=(d,0)");
           ggb.evalCommand("Segment(K,B)");
         }
 
-        if (step === 4) {
-          ggb.evalCommand("c = 3.3");
-          ggb.evalCommand("circle = Circle(B,c)");
-          ggb.evalCommand("A = Intersect(circle,KE,1)");
-          ggb.evalCommand("A1 = Intersect(circle,KE,2)");
+        if (s >= 4) {
+          ggb.evalCommand("c=3.3");
+          ggb.evalCommand("circle=Circle(B,c)");
+          ggb.evalCommand("A=Intersect(circle,KE,1)");
+          ggb.evalCommand("A1=Intersect(circle,KE,2)");
         }
 
-        if (step === 5) {
-          ggb.evalCommand("AC = PerpendicularLine(A,l)");
-          ggb.evalCommand("C = Intersect(AC,l)");
+        if (s >= 5) {
+          ggb.evalCommand("AC=PerpendicularLine(A,l)");
+          ggb.evalCommand("C=Intersect(AC,l)");
           ggb.evalCommand("Polygon(A,B,C)");
         }
 
-        if (step === 6) {
-          ggb.evalCommand("A1C1 = PerpendicularLine(A1,l)");
-          ggb.evalCommand("C1 = Intersect(A1C1,l)");
+        if (s >= 6) {
+          ggb.evalCommand("A1C1=PerpendicularLine(A1,l)");
+          ggb.evalCommand("C1=Intersect(A1C1,l)");
           ggb.evalCommand("Polygon(A1,B,C1)");
         }
+      }
+
+      function rebuild() {
+        ggb.reset();
+        buildStep(step);
+        highlightStep();
+      }
+
+      function nextStep() {
+        ggb = document.ggbApplet;
+
+        if (step < 6) {
+          step++;
+          rebuild();
+        }
+      }
+
+      function prevStep() {
+        ggb = document.ggbApplet;
+
+        if (step > 0) {
+          step--;
+          rebuild();
+        }
+      }
+
+      function resetAll() {
+        ggb = document.ggbApplet;
+        step = 0;
+        ggb.reset();
+        highlightStep();
       }
     </script>
   </body>
